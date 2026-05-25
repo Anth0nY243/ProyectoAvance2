@@ -10,7 +10,6 @@ public class Main {
         SwingUtilities.invokeLater(() -> {
             SistemaGestionEventos sistema = GestorArchivos.cargarDatos();
 
-            // --- TRUCO PARA LA EXPOSICIÓN: Inyectar voluntarios de prueba si la cola está vacía ---
             if (sistema.getSolicitudesPendientes().isEmpty()) {
                 try {
                     modelo.Evento evDemo = new modelo.Evento(99, "Campaña de Reciclaje", 10, java.time.LocalDate.now(), "Parque Central");

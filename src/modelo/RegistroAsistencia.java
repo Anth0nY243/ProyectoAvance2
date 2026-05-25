@@ -3,7 +3,7 @@ package modelo;
 import java.io.Serializable;
 
 public class RegistroAsistencia implements Serializable {
-    private int id; // Identificador opcional si lo usas
+    private int id; // Identificador opcional
     private Inscripcion inscripcion;
     private String reporte; // Ej: "Presente", "Llegó tarde", etc.
 

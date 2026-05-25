@@ -9,9 +9,9 @@ import java.util.*;
 public class SistemaGestionEventos implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    // ESTRUCTURAS DE DATOS (Módulos de los 4 integrantes)
-    private HashMap<String, Usuario> usuarios; // O(1) Login - Módulo Anthony
-    private TreeMap<LocalDate, Evento> eventos; // O(log n) Ordenamiento - Módulo Damián
+    // ESTRUCTURAS DE DATOS
+    private HashMap<String, Usuario> usuarios; // Login - Módulo Anthony
+    private TreeMap<LocalDate, Evento> eventos; // Ordenamiento - Módulo Damián
     private Queue<Inscripcion> solicitudesPendientes; // FIFO - Módulo Sebastián
     private Stack<Inscripcion> historialAcciones; // LIFO Deshacer - Módulo Marco
     private HashSet<Integer> asistenciasValidadas; // Evita duplicados
@@ -77,7 +77,7 @@ public class SistemaGestionEventos implements Serializable {
 
         ((LinkedList<Inscripcion>) solicitudesPendientes).addFirst(ultima); // Devuelve al inicio de la cola
     }
-    // MÓDULO 4: Marco Herrera (Gestión de Asistencia y Reportes)
+    // MÓDULO 4: (Gestión de Asistencia y Reportes)
     public List<Object[]> generarReporteGeneral() {
         List<Object[]> reporte = new ArrayList<>();
 
@@ -94,9 +94,6 @@ public class SistemaGestionEventos implements Serializable {
 
         return reporte;
     }
-    // -------------------------------------------------------------
-    // MÉTODOS PARA COMPATIBILIDAD CON PANELES GRÁFICOS
-    // -------------------------------------------------------------
 
     public List<Evento> getEventosDisponibles() {
         // Devuelve los eventos del TreeMap como una Lista
@@ -127,7 +124,7 @@ public class SistemaGestionEventos implements Serializable {
         return "NO INSCRITO";
     }
 
-    // Sobrecarga del método para aceptar el String de fecha que manda tu panel
+    // Sobrecarga del método para aceptar el String de fecha
     public void solicitarInscripcion(Usuario vol, Evento ev, String fechaSol) throws VoluntariadoException {
         if (ev.getCuposDisponibles() <= 0) throw new VoluntariadoException("Evento lleno.");
         Inscripcion nueva = new Inscripcion(solicitudesPendientes.size() + historialAcciones.size() + 1, vol, ev);

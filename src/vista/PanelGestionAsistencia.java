@@ -68,7 +68,6 @@ public class PanelGestionAsistencia extends PanelBase {
 
         if (evento.isAsistenciaTomada()) {
             JOptionPane.showMessageDialog(this, "La asistencia ya fue registrada por: " + evento.getCoordinadorAsistencia());
-            // Opcional: Podrías mostrar la lista solo lectura aquí si quisieras
             return;
         }
 
@@ -79,7 +78,6 @@ public class PanelGestionAsistencia extends PanelBase {
             return;
         }
 
-        // --- DIÁLOGO PARA MARCAR CASILLAS ---
         JDialog dialogo = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Asistencia: " + evento.getNombre(), true);
         dialogo.setSize(400, 500);
         dialogo.setLayout(new BorderLayout());

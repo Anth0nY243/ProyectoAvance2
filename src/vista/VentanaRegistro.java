@@ -11,7 +11,7 @@ public class VentanaRegistro extends JDialog {
     private JTextField txtNombre;
     private JTextField txtUser;
     private JPasswordField txtPass;
-    private JComboBox<RolUsuario> comboRol; // Componente requerido por el avance
+    private JComboBox<RolUsuario> comboRol;
     private JButton btnRegistrar;
 
     public VentanaRegistro(JFrame parent, SistemaGestionEventos sistema) {
@@ -20,7 +20,6 @@ public class VentanaRegistro extends JDialog {
         setSize(350, 350);
         setLocationRelativeTo(parent);
 
-        // Poblar el JComboBox
         comboRol.setModel(new DefaultComboBoxModel<>(RolUsuario.values()));
 
         btnRegistrar.addActionListener(e -> {

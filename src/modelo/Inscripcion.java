@@ -26,7 +26,6 @@ public class Inscripcion implements Serializable {
     public void rechazar() { this.estado = EstadoInscripcion.RECHAZADA; }
     public void marcarAsistio() { this.estado = EstadoInscripcion.ASISTIO; }
 
-    // Getters requeridos
     public int getId() { return id; }
     public Usuario getVoluntario() { return voluntario; }
     public Evento getEvento() { return evento; }

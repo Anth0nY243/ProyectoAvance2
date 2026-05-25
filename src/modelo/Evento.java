@@ -37,7 +37,6 @@ public class Evento implements Serializable {
         this.coordinadorAsistencia = coordinador;
     }
 
-    // Getters requeridos por tus paneles
     public int getId() { return id; }
     public String getNombre() { return nombre; }
     public LocalDate getFecha() { return fecha; }

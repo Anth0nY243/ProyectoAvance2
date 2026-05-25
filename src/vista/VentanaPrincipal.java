@@ -9,9 +9,8 @@ import java.awt.event.WindowEvent;
 
 public class VentanaPrincipal extends JFrame {
     private JPanel panelPadre;
-    private JTabbedPane tabbedPaneGeneral; // Componente requerido por el avance
+    private JTabbedPane tabbedPaneGeneral;
 
-    // Estos paneles debes enlazarlos en el diseñador de IntelliJ (anidarlos dentro del JTabbedPane)
     private PanelCrearEvento panelCrearEvento;
     private PanelGestionInscripciones panelInscripciones;
 
@@ -21,15 +20,12 @@ public class VentanaPrincipal extends JFrame {
         setSize(800, 600);
         setLocationRelativeTo(null);
 
-        // Inicializamos los paneles internos pasándoles el sistema
         panelCrearEvento = new PanelCrearEvento(sistema);
         panelInscripciones = new PanelGestionInscripciones(sistema);
 
-        // Agregamos los paneles al JTabbedPane por código (Si no lo hiciste en el diseñador visual)
         tabbedPaneGeneral.addTab("Crear Eventos", panelCrearEvento.getPanelPrincipal());
         tabbedPaneGeneral.addTab("Cola de Inscripciones", panelInscripciones.getPanelPrincipal());
 
-        // Evento crítico para guardar los datos al cerrar
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
