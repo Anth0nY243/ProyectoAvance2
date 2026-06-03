@@ -1,37 +1,50 @@
 package vista;
 
-import modelo.Usuario;
-import servicio.GestorArchivos;
 import servicio.SistemaGestionEventos;
+import modelo.Usuario;
+import modelo.RolUsuario;
 import javax.swing.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
 public class VentanaPrincipal extends JFrame {
-    private JPanel panelPadre;
-    private JTabbedPane tabbedPaneGeneral;
+    private JPanel panelContenedor;
+    private JTabbedPane tabbedPanePrincipal;
 
-    private PanelCrearEvento panelCrearEvento;
-    private PanelGestionInscripciones panelInscripciones;
+    private SistemaGestionEventos sistema;
+    private Usuario usuarioActual;
 
-    public VentanaPrincipal(SistemaGestionEventos sistema, Usuario usuarioLogueado) {
-        setContentPane(panelPadre);
-        setTitle("Sistema - " + usuarioLogueado.getNombreCompleto());
-        setSize(800, 600);
+    public VentanaPrincipal(SistemaGestionEventos sistema, Usuario usuarioActual) {
+        this.sistema = sistema;
+        this.usuarioActual = usuarioActual;
+
+        setContentPane(panelContenedor);
+        setTitle("Conexión Voluntaria - " + usuarioActual.getNombreCompleto() + " (" + usuarioActual.getRol() + ")");
+        setSize(900, 650);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        panelCrearEvento = new PanelCrearEvento(sistema);
-        panelInscripciones = new PanelGestionInscripciones(sistema);
+        if (usuarioActual.getRol() == RolUsuario.ADMINISTRADOR) {
+            PanelRegistroCoordinador panelAdmin = new PanelRegistroCoordinador(sistema, usuarioActual);
+            tabbedPanePrincipal.addTab("Registrar Coordinadores", panelAdmin.getPanel());
 
-        tabbedPaneGeneral.addTab("Crear Eventos", panelCrearEvento.getPanelPrincipal());
-        tabbedPaneGeneral.addTab("Cola de Inscripciones", panelInscripciones.getPanelPrincipal());
+            PanelCrearEvento panelEventos = new PanelCrearEvento(sistema);
+            tabbedPanePrincipal.addTab("Logística de Eventos", panelEventos.getPanel());
 
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                GestorArchivos.guardarDatos(sistema);
-                System.exit(0);
-            }
-        });
+            PanelGestionInscripciones panelInscripciones = new PanelGestionInscripciones(sistema);
+            tabbedPanePrincipal.addTab("Cola de Inscripciones", panelInscripciones.getPanel());
+
+        } else if (usuarioActual.getRol() == RolUsuario.COORDINADOR) {
+            PanelCrearEvento panelEventos = new PanelCrearEvento(sistema);
+            tabbedPanePrincipal.addTab("Logística de Eventos", panelEventos.getPanel());
+
+            PanelGestionInscripciones panelInscripciones = new PanelGestionInscripciones(sistema);
+            tabbedPanePrincipal.addTab("Cola de Inscripciones", panelInscripciones.getPanel());
+
+            PanelGestionAsistencia panelAsistencia = new PanelGestionAsistencia(sistema, usuarioActual);
+            tabbedPanePrincipal.addTab("Tomar Asistencia", panelAsistencia.getPanel());
+
+        } else if (usuarioActual.getRol() == RolUsuario.VOLUNTARIO) {
+            PanelInscripcionVoluntario panelVoluntario = new PanelInscripcionVoluntario(sistema, usuarioActual);
+            tabbedPanePrincipal.addTab("Eventos Disponibles", panelVoluntario.getPanel());
+        }
     }
 }

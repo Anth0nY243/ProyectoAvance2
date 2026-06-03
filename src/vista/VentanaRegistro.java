@@ -1,36 +1,49 @@
 package vista;
 
-import excepciones.VoluntariadoException;
-import modelo.RolUsuario;
-import modelo.Usuario;
 import servicio.SistemaGestionEventos;
+import modelo.Usuario;
+import modelo.RolUsuario;
+import excepciones.VoluntariadoException;
 import javax.swing.*;
 
-public class VentanaRegistro extends JDialog {
-    private JPanel panelPrincipal;
-    private JTextField txtNombre;
-    private JTextField txtUser;
-    private JPasswordField txtPass;
-    private JComboBox<RolUsuario> comboRol;
-    private JButton btnRegistrar;
+public class VentanaRegistro extends JFrame {
+    private JPanel panelRegistro;
+    private JTextField txtNombreCompleto;
+    private JTextField txtCedula;
+    private JTextField txtUsername;
+    private JPasswordField txtPassword;
+    private JComboBox<RolUsuario> cbxRol;
+    private JButton btnGuardar;
+    private SistemaGestionEventos sistema;
+    private Usuario usuarioActual;
 
-    public VentanaRegistro(JFrame parent, SistemaGestionEventos sistema) {
-        super(parent, "Registro de Usuario", true);
-        setContentPane(panelPrincipal);
-        setSize(350, 350);
-        setLocationRelativeTo(parent);
+    public VentanaRegistro(SistemaGestionEventos sistema, Usuario usuarioActual) {
+        this.sistema = sistema;
+        this.usuarioActual = usuarioActual;
 
-        comboRol.setModel(new DefaultComboBoxModel<>(RolUsuario.values()));
+        setContentPane(panelRegistro);
+        setTitle("Registro de Usuarios");
+        setSize(450, 400);
+        setLocationRelativeTo(null);
 
-        btnRegistrar.addActionListener(e -> {
+        cbxRol.setModel(new DefaultComboBoxModel<>(new RolUsuario[]{RolUsuario.VOLUNTARIO}));
+
+        btnGuardar.addActionListener(e -> {
             try {
-                Usuario u = new Usuario((int)(Math.random()*100), txtNombre.getText(), txtUser.getText(),
-                        new String(txtPass.getPassword()), (RolUsuario) comboRol.getSelectedItem());
-                sistema.registrarUsuario(u);
-                JOptionPane.showMessageDialog(this, "Usuario creado exitosamente.");
+                RolUsuario rolSel = (RolUsuario) cbxRol.getSelectedItem();
+                Usuario nuevo = new Usuario(
+                        txtNombreCompleto.getText(),
+                        txtCedula.getText(),
+                        txtUsername.getText(),
+                        new String(txtPassword.getPassword()),
+                        rolSel
+                );
+
+                sistema.registrarUsuario(usuarioActual, nuevo);
+                JOptionPane.showMessageDialog(null, "Registro exitoso. Cédula y datos validados.");
                 dispose();
             } catch (VoluntariadoException ex) {
-                JOptionPane.showMessageDialog(this, ex.getMessage());
+                JOptionPane.showMessageDialog(null, ex.getMessage(), "Error de Validación", JOptionPane.ERROR_MESSAGE);
             }
         });
     }

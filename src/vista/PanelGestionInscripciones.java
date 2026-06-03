@@ -1,58 +1,60 @@
 package vista;
 
-import excepciones.VoluntariadoException;
-import modelo.Inscripcion;
 import servicio.SistemaGestionEventos;
+import modelo.Inscripcion;
+import excepciones.VoluntariadoException;
 import javax.swing.*;
+import java.util.Queue;
 
 public class PanelGestionInscripciones {
-    private JPanel panelPrincipal;
-    private JList<String> listCola; // Componente requerido (Muestra la Queue)
+    private JPanel panelInscripciones;
+    private JList<Inscripcion> listFilaEspera;
     private JButton btnAprobar;
     private JButton btnRechazar;
-    private JButton btnDeshacer; // Ejecuta el Stack
-
+    private JButton btnDeshacer;
+    private JButton btnRefrescar;
     private SistemaGestionEventos sistema;
-    private DefaultListModel<String> modeloLista;
+    private DefaultListModel<Inscripcion> listModel;
 
     public PanelGestionInscripciones(SistemaGestionEventos sistema) {
         this.sistema = sistema;
-        modeloLista = new DefaultListModel<>();
-        listCola.setModel(modeloLista);
+        listModel = new DefaultListModel<>();
+        listFilaEspera.setModel(listModel);
 
-        actualizarVistaCola();
+        btnRefrescar.addActionListener(e -> actualizarLista());
 
         btnAprobar.addActionListener(e -> procesar(true));
         btnRechazar.addActionListener(e -> procesar(false));
 
         btnDeshacer.addActionListener(e -> {
             try {
-                sistema.deshacerUltimaAccion(); // Saca de la Pila (LIFO)
-                actualizarVistaCola();
-                JOptionPane.showMessageDialog(null, "Acción deshecha con éxito (Stack LIFO).");
+                sistema.deshacerUltimaAccion(); // Devuelve el cupo al evento y pone al usuario en la Cola
+                actualizarLista();
+                JOptionPane.showMessageDialog(null, "Acción revertida (LIFO). El cupo fue devuelto al evento.");
             } catch (VoluntariadoException ex) {
-                JOptionPane.showMessageDialog(null, ex.getMessage());
+                JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
     }
 
     private void procesar(boolean aprobar) {
         try {
-            sistema.procesarSiguienteInscripcion(aprobar); // Saca de la Cola (FIFO)
-            actualizarVistaCola();
+            sistema.procesarSiguienteInscripcion(aprobar); // Resta el cupo automáticamente si es true
+            actualizarLista();
+            String msj = aprobar ? "Aprobado (Se restó 1 cupo disponible)" : "Rechazado";
+            JOptionPane.showMessageDialog(null, "Procesado correctamente: " + msj);
         } catch (VoluntariadoException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage());
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private void actualizarVistaCola() {
-        modeloLista.clear();
-        int turno = 1;
-        for (Inscripcion i : sistema.getSolicitudesPendientes()) {
-            modeloLista.addElement("Turno " + turno + " - " + i.getVoluntario().getNombreCompleto() + " (Evento: " + i.getEvento().getNombre() + ")");
-            turno++;
+    private void actualizarLista() {
+        listModel.clear();
+        Queue<Inscripcion> fila = sistema.getFilaEspera();
+        for (Inscripcion ins : fila) {
+            listModel.addElement(ins);
         }
     }
 
-    public JPanel getPanelPrincipal() { return panelPrincipal; }
+    public JPanel getPanel() { return panelInscripciones; }
 }

@@ -1,43 +1,43 @@
 package vista;
 
-import excepciones.VoluntariadoException;
-import modelo.Usuario;
 import servicio.SistemaGestionEventos;
+import modelo.Usuario;
+import excepciones.VoluntariadoException;
 import javax.swing.*;
 
 public class VentanaLogin extends JFrame {
     private JPanel panelPrincipal;
-    private JTextField txtUser;
-    private JPasswordField txtPass;
-    private JButton btnLogin;
-    private JButton btnRegistro;
-
+    private JTextField txtUsername;
+    private JPasswordField txtPassword;
+    private JButton btnIngresar;
+    private JButton btnRegistrarse;
     private SistemaGestionEventos sistema;
 
     public VentanaLogin(SistemaGestionEventos sistema) {
         this.sistema = sistema;
         setContentPane(panelPrincipal);
-        setTitle("Conexión Voluntaria - Login");
+        setTitle("Conexión Voluntaria - Iniciar Sesión");
         setSize(400, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        btnLogin.addActionListener(e -> hacerLogin());
+        btnIngresar.addActionListener(e -> {
+            try {
+                String user = txtUsername.getText();
+                String pass = new String(txtPassword.getPassword());
+                Usuario logueado = sistema.iniciarSesion(user, pass);
+                JOptionPane.showMessageDialog(null, "Bienvenido " + logueado.getNombreCompleto());
+                VentanaPrincipal vp = new VentanaPrincipal(sistema, logueado);
+                vp.setVisible(true);
+                dispose();
+            } catch (VoluntariadoException ex) {
+                JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
 
-        btnRegistro.addActionListener(e -> {
-            VentanaRegistro vr = new VentanaRegistro(this, sistema);
+        btnRegistrarse.addActionListener(e -> {
+            VentanaRegistro vr = new VentanaRegistro(sistema, null);
             vr.setVisible(true);
         });
-    }
-
-    private void hacerLogin() {
-        try {
-            Usuario logueado = sistema.iniciarSesion(txtUser.getText(), new String(txtPass.getPassword()));
-            VentanaPrincipal vp = new VentanaPrincipal(sistema, logueado);
-            vp.setVisible(true);
-            this.dispose(); // Cierra el login
-        } catch (VoluntariadoException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
     }
 }

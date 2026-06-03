@@ -1,31 +1,32 @@
 package principal;
 
-import servicio.GestorArchivos;
 import servicio.SistemaGestionEventos;
+import servicio.GestorArchivos;
 import vista.VentanaLogin;
-import javax.swing.SwingUtilities;
 
 public class Main {
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            SistemaGestionEventos sistema = GestorArchivos.cargarDatos();
 
-            if (sistema.getSolicitudesPendientes().isEmpty()) {
-                try {
-                    modelo.Evento evDemo = new modelo.Evento(99, "Campaña de Reciclaje", 10, java.time.LocalDate.now(), "Parque Central");
-                    sistema.crearEvento(evDemo);
+        // Cargar los datos del archivo .dat si existe
+        SistemaGestionEventos sistemaCargado = GestorArchivos.cargarDatos();
 
-                    modelo.Usuario vol1 = new modelo.Usuario(2, "Juan Pérez", "juan", "123", modelo.RolUsuario.VOLUNTARIO);
-                    modelo.Usuario vol2 = new modelo.Usuario(3, "Ana Gómez", "ana", "123", modelo.RolUsuario.VOLUNTARIO);
+        // Si es la primera vez, el archivo no existe, usamos el constructor con datos quemados
+        if (sistemaCargado == null) {
+            sistemaCargado = new SistemaGestionEventos();
+        }
 
-                    sistema.solicitarInscripcion(vol1, evDemo); // Entra Juan a la Cola
-                    sistema.solicitarInscripcion(vol2, evDemo); // Entra Ana a la Cola (detrás de Juan)
-                } catch (Exception e) {}
-            }
-            // --------------------------------------------------------------------------------------
+        final SistemaGestionEventos sistemaFinal = sistemaCargado;
 
-            VentanaLogin login = new VentanaLogin(sistema);
+        // Esto guarda TODO automáticamente cuando cierras el programa
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            GestorArchivos.guardarDatos(sistemaFinal);
+        }));
+
+        // Lanzar la Interfaz Gráfica
+        java.awt.EventQueue.invokeLater(() -> {
+            VentanaLogin login = new VentanaLogin(sistemaFinal);
             login.setVisible(true);
         });
+
     }
 }
